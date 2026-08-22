@@ -1,1 +1,340 @@
+@startuml
 
+title Modelo Relacional - Sistema de Gestão de Vendas
+
+hide methods
+hide stereotypes
+skinparam linetype ortho
+
+' =========================================================
+' TENANT E USUÁRIOS
+' =========================================================
+
+entity "TENANT" as tenant {
+    * id : UUID <<PK>>
+    --
+    nome : VARCHAR
+    documento : VARCHAR
+    telefone : VARCHAR
+    email : VARCHAR
+    endereco : TEXT
+    logo : TEXT
+    ativo : BOOLEAN
+    data_criacao : TIMESTAMPTZ
+}
+
+entity "USUARIO" as usuario {
+    * id : UUID <<PK>>
+    --
+    auth_user_id : UUID <<FK>>
+    tenant_id : UUID <<FK>>
+    nome : VARCHAR
+    email : VARCHAR
+    perfil : VARCHAR
+    ativo : BOOLEAN
+    data_criacao : TIMESTAMPTZ
+}
+
+' =========================================================
+' CLIENTES
+' =========================================================
+
+entity "CLIENTE" as cliente {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    nome : VARCHAR
+    cpf_cnpj : VARCHAR
+    telefone : VARCHAR
+    email : VARCHAR
+    endereco : TEXT
+    tipo : VARCHAR
+    ativo : BOOLEAN
+    data_criacao : TIMESTAMPTZ
+}
+
+entity "CONTA_CLIENTE" as conta_cliente {
+    * id : UUID <<PK>>
+    --
+    cliente_id : UUID <<FK>>
+    saldo_devedor : NUMERIC
+    saldo_credito : NUMERIC
+    data_criacao : TIMESTAMPTZ
+    data_atualizacao : TIMESTAMPTZ
+}
+
+' =========================================================
+' PRODUTOS E FORNECEDORES
+' =========================================================
+
+entity "PRODUTO" as produto {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    nome : VARCHAR
+    descricao : TEXT
+    unidade : VARCHAR
+    quantidade_estoque : NUMERIC
+    ativo : BOOLEAN
+    data_criacao : TIMESTAMPTZ
+}
+
+entity "FORNECEDOR" as fornecedor {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    nome : VARCHAR
+    documento : VARCHAR
+    telefone : VARCHAR
+    email : VARCHAR
+    endereco : TEXT
+    ativo : BOOLEAN
+    data_criacao : TIMESTAMPTZ
+}
+
+' =========================================================
+' ENTRADA DE MERCADORIAS
+' =========================================================
+
+entity "ENTRADA_MERCADORIA" as entrada {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    fornecedor_id : UUID <<FK>>
+    usuario_id : UUID <<FK>>
+    data : TIMESTAMPTZ
+    valor_total : NUMERIC
+    observacao : TEXT
+    status : VARCHAR
+}
+
+entity "ITEM_ENTRADA" as item_entrada {
+    * id : UUID <<PK>>
+    --
+    entrada_id : UUID <<FK>>
+    produto_id : UUID <<FK>>
+    quantidade : NUMERIC
+    custo_unitario : NUMERIC
+    valor_total : NUMERIC
+}
+
+' =========================================================
+' VENDAS
+' =========================================================
+
+entity "VENDA" as venda {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    cliente_id : UUID <<FK>>
+    vendedor_id : UUID <<FK>>
+    numero : BIGINT
+    data_venda : TIMESTAMPTZ
+    tipo_pagamento : VARCHAR
+    prazo_dias : INTEGER
+    data_vencimento : DATE
+    valor_total : NUMERIC
+    valor_pago : NUMERIC
+    saldo : NUMERIC
+    status : VARCHAR
+    data_criacao : TIMESTAMPTZ
+    data_atualizacao : TIMESTAMPTZ
+}
+
+entity "ITEM_VENDA" as item_venda {
+    * id : UUID <<PK>>
+    --
+    venda_id : UUID <<FK>>
+    produto_id : UUID <<FK>>
+    quantidade : NUMERIC
+    preco_unitario : NUMERIC
+    valor_total : NUMERIC
+}
+
+entity "ROMANEIO" as romaneio {
+    * id : UUID <<PK>>
+    --
+    venda_id : UUID <<FK>>
+    numero : BIGINT
+    data_geracao : TIMESTAMPTZ
+}
+
+' =========================================================
+' PAGAMENTOS
+' =========================================================
+
+entity "PAGAMENTO" as pagamento {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    cliente_id : UUID <<FK>>
+    usuario_id : UUID <<FK>>
+    valor : NUMERIC
+    forma_pagamento : VARCHAR
+    data : TIMESTAMPTZ
+    observacao : TEXT
+    status : VARCHAR
+}
+
+entity "PAGAMENTO_APLICACAO" as pagamento_aplicacao {
+    * id : UUID <<PK>>
+    --
+    pagamento_id : UUID <<FK>>
+    venda_id : UUID <<FK>>
+    valor_aplicado : NUMERIC
+}
+
+' =========================================================
+' DEVOLUÇÕES / ESTORNOS
+' =========================================================
+
+entity "DEVOLUCAO" as devolucao {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    venda_id : UUID <<FK>>
+    usuario_id : UUID <<FK>>
+    valor_total : NUMERIC
+    motivo : TEXT
+    estorno_externo : BOOLEAN
+    data : TIMESTAMPTZ
+    status : VARCHAR
+}
+
+entity "ITEM_DEVOLUCAO" as item_devolucao {
+    * id : UUID <<PK>>
+    --
+    devolucao_id : UUID <<FK>>
+    item_venda_id : UUID <<FK>>
+    produto_id : UUID <<FK>>
+    quantidade : NUMERIC
+    valor_unitario : NUMERIC
+    valor_total : NUMERIC
+}
+
+' =========================================================
+' COBRANÇAS
+' =========================================================
+
+entity "COBRANCA" as cobranca {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    cliente_id : UUID <<FK>>
+    usuario_id : UUID <<FK>>
+    data : TIMESTAMPTZ
+    forma_contato : VARCHAR
+    status : VARCHAR
+    valor_cobrado : NUMERIC
+    observacao : TEXT
+    proxima_cobranca : DATE
+}
+
+entity "COBRANCA_VENDA" as cobranca_venda {
+    * id : UUID <<PK>>
+    --
+    cobranca_id : UUID <<FK>>
+    venda_id : UUID <<FK>>
+}
+
+' =========================================================
+' ESTOQUE
+' =========================================================
+
+entity "MOVIMENTACAO_ESTOQUE" as movimentacao_estoque {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    produto_id : UUID <<FK>>
+    usuario_id : UUID <<FK>>
+    item_entrada_id : UUID <<FK>>
+    item_venda_id : UUID <<FK>>
+    item_devolucao_id : UUID <<FK>>
+    tipo : VARCHAR
+    quantidade : NUMERIC
+    saldo_anterior : NUMERIC
+    saldo_posterior : NUMERIC
+    data : TIMESTAMPTZ
+}
+
+' =========================================================
+' HISTÓRICO
+' =========================================================
+
+entity "HISTORICO" as historico {
+    * id : UUID <<PK>>
+    --
+    tenant_id : UUID <<FK>>
+    usuario_id : UUID <<FK>>
+    entidade : VARCHAR
+    entidade_id : UUID
+    tipo_operacao : VARCHAR
+    descricao : TEXT
+    valor_anterior : JSONB
+    valor_novo : JSONB
+    data_hora : TIMESTAMPTZ
+}
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+' Tenant
+tenant ||--o{ usuario : possui
+tenant ||--o{ cliente : possui
+tenant ||--o{ produto : possui
+tenant ||--o{ fornecedor : possui
+tenant ||--o{ entrada : possui
+tenant ||--o{ venda : possui
+tenant ||--o{ pagamento : possui
+tenant ||--o{ devolucao : possui
+tenant ||--o{ cobranca : possui
+tenant ||--o{ movimentacao_estoque : possui
+tenant ||--o{ historico : registra
+
+' Usuários
+usuario ||--o{ entrada : registra
+usuario ||--o{ venda : realiza
+usuario ||--o{ pagamento : registra
+usuario ||--o{ devolucao : registra
+usuario ||--o{ cobranca : realiza
+usuario ||--o{ movimentacao_estoque : registra
+usuario ||--o{ historico : gera
+
+' Clientes
+cliente ||--|| conta_cliente : possui
+cliente ||--o{ venda : realiza
+cliente ||--o{ pagamento : realiza
+cliente ||--o{ cobranca : recebe
+
+' Fornecedores e entradas
+fornecedor ||--o{ entrada : fornece
+entrada ||--|{ item_entrada : contem
+produto ||--o{ item_entrada : recebido
+
+' Vendas
+venda ||--|{ item_venda : contem
+produto ||--o{ item_venda : vendido
+venda ||--|| romaneio : gera
+
+' Pagamentos
+pagamento ||--o{ pagamento_aplicacao : possui
+venda ||--o{ pagamento_aplicacao : recebe
+
+' Devoluções
+venda ||--o{ devolucao : possui
+devolucao ||--|{ item_devolucao : contem
+item_venda ||--o{ item_devolucao : devolvido
+produto ||--o{ item_devolucao : retorna
+
+' Cobranças
+cobranca ||--o{ cobranca_venda : relaciona
+venda ||--o{ cobranca_venda : cobrada
+
+' Estoque
+produto ||--o{ movimentacao_estoque : movimenta
+item_entrada ||--o{ movimentacao_estoque : origina
+item_venda ||--o{ movimentacao_estoque : origina
+item_devolucao ||--o{ movimentacao_estoque : origina
+
+@enduml
