@@ -1,22 +1,18 @@
 @startuml
 
-title Modelo Relacional - Sistema de Gestão de Vendas
+title Modelo Relacional - InflowMarket
 
 hide methods
 hide stereotypes
 skinparam linetype ortho
 
-' =========================================================
-' TENANT E USUÁRIOS
-' =========================================================
-
 entity "TENANT" as tenant {
     * id : UUID <<PK>>
     --
-    nome : VARCHAR
-    documento : VARCHAR
-    telefone : VARCHAR
-    email : VARCHAR
+    nome : VARCHAR(150)
+    documento : VARCHAR(30)
+    telefone : VARCHAR(30)
+    email : VARCHAR(150)
     endereco : TEXT
     logo : TEXT
     ativo : BOOLEAN
@@ -26,29 +22,25 @@ entity "TENANT" as tenant {
 entity "USUARIO" as usuario {
     * id : UUID <<PK>>
     --
-    auth_user_id : UUID <<FK>>
+    auth_user_id : UUID <<FK auth.users>>
     tenant_id : UUID <<FK>>
-    nome : VARCHAR
-    email : VARCHAR
-    perfil : VARCHAR
+    nome : VARCHAR(150)
+    email : VARCHAR(150)
+    perfil : perfil_usuario
     ativo : BOOLEAN
     data_criacao : TIMESTAMPTZ
 }
-
-' =========================================================
-' CLIENTES
-' =========================================================
 
 entity "CLIENTE" as cliente {
     * id : UUID <<PK>>
     --
     tenant_id : UUID <<FK>>
-    nome : VARCHAR
-    cpf_cnpj : VARCHAR
-    telefone : VARCHAR
-    email : VARCHAR
+    nome : VARCHAR(150)
+    cpf_cnpj : VARCHAR(30)
+    telefone : VARCHAR(30)
+    email : VARCHAR(150)
     endereco : TEXT
-    tipo : VARCHAR
+    tipo : tipo_cliente
     ativo : BOOLEAN
     data_criacao : TIMESTAMPTZ
 }
@@ -57,24 +49,19 @@ entity "CONTA_CLIENTE" as conta_cliente {
     * id : UUID <<PK>>
     --
     cliente_id : UUID <<FK>>
-    saldo_devedor : NUMERIC
-    saldo_credito : NUMERIC
+    saldo_devedor : NUMERIC(15,2)
     data_criacao : TIMESTAMPTZ
     data_atualizacao : TIMESTAMPTZ
 }
-
-' =========================================================
-' PRODUTOS E FORNECEDORES
-' =========================================================
 
 entity "PRODUTO" as produto {
     * id : UUID <<PK>>
     --
     tenant_id : UUID <<FK>>
-    nome : VARCHAR
+    nome : VARCHAR(150)
     descricao : TEXT
-    unidade : VARCHAR
-    quantidade_estoque : NUMERIC
+    unidade : VARCHAR(30)
+    quantidade_estoque : NUMERIC(15,3)
     ativo : BOOLEAN
     data_criacao : TIMESTAMPTZ
 }
@@ -83,18 +70,14 @@ entity "FORNECEDOR" as fornecedor {
     * id : UUID <<PK>>
     --
     tenant_id : UUID <<FK>>
-    nome : VARCHAR
-    documento : VARCHAR
-    telefone : VARCHAR
-    email : VARCHAR
+    nome : VARCHAR(150)
+    documento : VARCHAR(30)
+    telefone : VARCHAR(30)
+    email : VARCHAR(150)
     endereco : TEXT
     ativo : BOOLEAN
     data_criacao : TIMESTAMPTZ
 }
-
-' =========================================================
-' ENTRADA DE MERCADORIAS
-' =========================================================
 
 entity "ENTRADA_MERCADORIA" as entrada {
     * id : UUID <<PK>>
@@ -103,9 +86,9 @@ entity "ENTRADA_MERCADORIA" as entrada {
     fornecedor_id : UUID <<FK>>
     usuario_id : UUID <<FK>>
     data : TIMESTAMPTZ
-    valor_total : NUMERIC
+    valor_total : NUMERIC(15,2)
     observacao : TEXT
-    status : VARCHAR
+    status : status_entrada
 }
 
 entity "ITEM_ENTRADA" as item_entrada {
@@ -113,14 +96,10 @@ entity "ITEM_ENTRADA" as item_entrada {
     --
     entrada_id : UUID <<FK>>
     produto_id : UUID <<FK>>
-    quantidade : NUMERIC
-    custo_unitario : NUMERIC
-    valor_total : NUMERIC
+    quantidade : NUMERIC(15,3)
+    custo_unitario : NUMERIC(15,2)
+    valor_total : NUMERIC(15,2)
 }
-
-' =========================================================
-' VENDAS
-' =========================================================
 
 entity "VENDA" as venda {
     * id : UUID <<PK>>
@@ -130,13 +109,14 @@ entity "VENDA" as venda {
     vendedor_id : UUID <<FK>>
     numero : BIGINT
     data_venda : TIMESTAMPTZ
-    tipo_pagamento : VARCHAR
+    tipo_venda : tipo_venda
+    forma_pagamento : forma_pagamento
     prazo_dias : INTEGER
     data_vencimento : DATE
-    valor_total : NUMERIC
-    valor_pago : NUMERIC
-    saldo : NUMERIC
-    status : VARCHAR
+    valor_total : NUMERIC(15,2)
+    valor_pago : NUMERIC(15,2)
+    saldo : NUMERIC(15,2)
+    status : status_venda
     data_criacao : TIMESTAMPTZ
     data_atualizacao : TIMESTAMPTZ
 }
@@ -146,22 +126,18 @@ entity "ITEM_VENDA" as item_venda {
     --
     venda_id : UUID <<FK>>
     produto_id : UUID <<FK>>
-    quantidade : NUMERIC
-    preco_unitario : NUMERIC
-    valor_total : NUMERIC
+    quantidade : NUMERIC(15,3)
+    preco_unitario : NUMERIC(15,2)
+    valor_total : NUMERIC(15,2)
 }
 
 entity "ROMANEIO" as romaneio {
     * id : UUID <<PK>>
     --
-    venda_id : UUID <<FK>>
+    venda_id : UUID <<FK, UNIQUE>>
     numero : BIGINT
     data_geracao : TIMESTAMPTZ
 }
-
-' =========================================================
-' PAGAMENTOS
-' =========================================================
 
 entity "PAGAMENTO" as pagamento {
     * id : UUID <<PK>>
@@ -169,11 +145,11 @@ entity "PAGAMENTO" as pagamento {
     tenant_id : UUID <<FK>>
     cliente_id : UUID <<FK>>
     usuario_id : UUID <<FK>>
-    valor : NUMERIC
-    forma_pagamento : VARCHAR
+    valor : NUMERIC(15,2)
+    forma_pagamento : forma_pagamento
     data : TIMESTAMPTZ
     observacao : TEXT
-    status : VARCHAR
+    status : status_pagamento
 }
 
 entity "PAGAMENTO_APLICACAO" as pagamento_aplicacao {
@@ -181,12 +157,8 @@ entity "PAGAMENTO_APLICACAO" as pagamento_aplicacao {
     --
     pagamento_id : UUID <<FK>>
     venda_id : UUID <<FK>>
-    valor_aplicado : NUMERIC
+    valor_aplicado : NUMERIC(15,2)
 }
-
-' =========================================================
-' DEVOLUÇÕES / ESTORNOS
-' =========================================================
 
 entity "DEVOLUCAO" as devolucao {
     * id : UUID <<PK>>
@@ -194,11 +166,11 @@ entity "DEVOLUCAO" as devolucao {
     tenant_id : UUID <<FK>>
     venda_id : UUID <<FK>>
     usuario_id : UUID <<FK>>
-    valor_total : NUMERIC
+    valor_total : NUMERIC(15,2)
     motivo : TEXT
     estorno_externo : BOOLEAN
     data : TIMESTAMPTZ
-    status : VARCHAR
+    status : status_devolucao
 }
 
 entity "ITEM_DEVOLUCAO" as item_devolucao {
@@ -207,14 +179,10 @@ entity "ITEM_DEVOLUCAO" as item_devolucao {
     devolucao_id : UUID <<FK>>
     item_venda_id : UUID <<FK>>
     produto_id : UUID <<FK>>
-    quantidade : NUMERIC
-    valor_unitario : NUMERIC
-    valor_total : NUMERIC
+    quantidade : NUMERIC(15,3)
+    valor_unitario : NUMERIC(15,2)
+    valor_total : NUMERIC(15,2)
 }
-
-' =========================================================
-' COBRANÇAS
-' =========================================================
 
 entity "COBRANCA" as cobranca {
     * id : UUID <<PK>>
@@ -223,9 +191,9 @@ entity "COBRANCA" as cobranca {
     cliente_id : UUID <<FK>>
     usuario_id : UUID <<FK>>
     data : TIMESTAMPTZ
-    forma_contato : VARCHAR
-    status : VARCHAR
-    valor_cobrado : NUMERIC
+    forma_contato : forma_contato_cobranca
+    status : status_cobranca
+    valor_cobrado : NUMERIC(15,2)
     observacao : TEXT
     proxima_cobranca : DATE
 }
@@ -237,10 +205,6 @@ entity "COBRANCA_VENDA" as cobranca_venda {
     venda_id : UUID <<FK>>
 }
 
-' =========================================================
-' ESTOQUE
-' =========================================================
-
 entity "MOVIMENTACAO_ESTOQUE" as movimentacao_estoque {
     * id : UUID <<PK>>
     --
@@ -250,36 +214,27 @@ entity "MOVIMENTACAO_ESTOQUE" as movimentacao_estoque {
     item_entrada_id : UUID <<FK>>
     item_venda_id : UUID <<FK>>
     item_devolucao_id : UUID <<FK>>
-    tipo : VARCHAR
-    quantidade : NUMERIC
-    saldo_anterior : NUMERIC
-    saldo_posterior : NUMERIC
+    tipo : tipo_movimentacao_estoque
+    quantidade : NUMERIC(15,3)
+    saldo_anterior : NUMERIC(15,3)
+    saldo_posterior : NUMERIC(15,3)
     data : TIMESTAMPTZ
 }
-
-' =========================================================
-' HISTÓRICO
-' =========================================================
 
 entity "HISTORICO" as historico {
     * id : UUID <<PK>>
     --
     tenant_id : UUID <<FK>>
     usuario_id : UUID <<FK>>
-    entidade : VARCHAR
+    entidade : VARCHAR(100)
     entidade_id : UUID
-    tipo_operacao : VARCHAR
+    tipo_operacao : VARCHAR(100)
     descricao : TEXT
     valor_anterior : JSONB
     valor_novo : JSONB
     data_hora : TIMESTAMPTZ
 }
 
-' =========================================================
-' RELACIONAMENTOS
-' =========================================================
-
-' Tenant
 tenant ||--o{ usuario : possui
 tenant ||--o{ cliente : possui
 tenant ||--o{ produto : possui
@@ -292,7 +247,6 @@ tenant ||--o{ cobranca : possui
 tenant ||--o{ movimentacao_estoque : possui
 tenant ||--o{ historico : registra
 
-' Usuários
 usuario ||--o{ entrada : registra
 usuario ||--o{ venda : realiza
 usuario ||--o{ pagamento : registra
@@ -301,37 +255,30 @@ usuario ||--o{ cobranca : realiza
 usuario ||--o{ movimentacao_estoque : registra
 usuario ||--o{ historico : gera
 
-' Clientes
 cliente ||--|| conta_cliente : possui
 cliente ||--o{ venda : realiza
 cliente ||--o{ pagamento : realiza
 cliente ||--o{ cobranca : recebe
 
-' Fornecedores e entradas
 fornecedor ||--o{ entrada : fornece
 entrada ||--|{ item_entrada : contem
 produto ||--o{ item_entrada : recebido
 
-' Vendas
 venda ||--|{ item_venda : contem
 produto ||--o{ item_venda : vendido
 venda ||--|| romaneio : gera
 
-' Pagamentos
 pagamento ||--o{ pagamento_aplicacao : possui
 venda ||--o{ pagamento_aplicacao : recebe
 
-' Devoluções
 venda ||--o{ devolucao : possui
 devolucao ||--|{ item_devolucao : contem
 item_venda ||--o{ item_devolucao : devolvido
 produto ||--o{ item_devolucao : retorna
 
-' Cobranças
 cobranca ||--o{ cobranca_venda : relaciona
 venda ||--o{ cobranca_venda : cobrada
 
-' Estoque
 produto ||--o{ movimentacao_estoque : movimenta
 item_entrada ||--o{ movimentacao_estoque : origina
 item_venda ||--o{ movimentacao_estoque : origina

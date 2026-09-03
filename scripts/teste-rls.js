@@ -1,12 +1,15 @@
+require('dotenv').config();
+
 const { createClient } = require('@supabase/supabase-js');
 
-const SUPABASE_URL = 'https://eedbrqevettzscrjnexx.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_5FcIU9DpeM6AGQn0iED75Q_W3uuPbET';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+    throw new Error('SUPABASE_URL ou SUPABASE_KEY não configurado no .env');
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function testarUsuario(email, senha, nome) {
     console.log(`\nTestando: ${nome}`);
@@ -47,22 +50,25 @@ async function testarUsuario(email, senha, nome) {
 
 async function main() {
     await testarUsuario(
-        'gerente.a@teste.com',
-        '12345678',
+        process.env.GERENTE_A_EMAIL,
+        process.env.GERENTE_A_SENHA,
         'Gerente A'
     );
 
     await testarUsuario(
-        'vendedor.a@teste.com',
-        '12345678',
+        process.env.VENDEDOR_A_EMAIL,
+        process.env.VENDEDOR_A_SENHA,
         'Vendedor A'
     );
 
     await testarUsuario(
-        'gerente.b@teste.com',
-        '12345678',
+        process.env.GERENTE_B_EMAIL,
+        process.env.GERENTE_B_SENHA,
         'Gerente B'
     );
 }
 
-main();
+main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+});
