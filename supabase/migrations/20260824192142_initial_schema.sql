@@ -13,7 +13,7 @@ create type public.perfil_usuario as enum (
 
 create type public.tipo_cliente as enum (
     'NORMAL',
-    'BALCAO'
+    'BALCAO'    
 );
 
 create type public.status_entrada as enum (

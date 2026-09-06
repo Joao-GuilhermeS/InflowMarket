@@ -36,7 +36,7 @@ LANGUAGE sql
 STABLE
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS 
     SELECT u.perfil
     FROM public.usuario u
     WHERE u.auth_user_id = auth.uid()
@@ -85,7 +85,12 @@ LANGUAGE sql
 STABLE
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $$'
+
+
+
+
+    '
     SELECT
         public.is_desenvolvedor()
         OR EXISTS (
