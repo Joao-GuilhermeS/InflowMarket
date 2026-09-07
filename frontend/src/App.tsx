@@ -1,9 +1,10 @@
 import { useAuth } from './context/AuthContext'
 import LoginPage from './pages/Login'
-import Clientes from './pages/Clientes'
+
+import Fornecedores from './pages/Fornecedores'
 
 function App() {
-  const { user, carregando, sair } = useAuth()
+  const { user, carregando } = useAuth()
 
   if (carregando) {
     return <p>Carregando...</p>
@@ -13,15 +14,7 @@ function App() {
     return <LoginPage />
   }
 
-  return (
-    <main>
-      <Clientes />
-
-      <button onClick={sair}>
-        Sair
-      </button>
-    </main>
-  )
+  return <Fornecedores />
 }
 
 export default App

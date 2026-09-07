@@ -1,44 +1,43 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import {
-  atualizarCliente,
-  criarCliente,
-  excluirCliente,
-  listarClientes,
-} from '../services/ClienteService'
+  atualizarFornecedor,
+  criarFornecedor,
+  excluirFornecedor,
+  listarFornecedores,
+} from '../services/FornecedorService'
 import type {
-  Cliente,
-  CriarCliente,
-} from '../services/ClienteService'
+  CriarFornecedor,
+  Fornecedor,
+} from '../services/FornecedorService'
 
-function Clientes() {
+function Fornecedores() {
   const { usuario } = useAuth()
 
-  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
   const [nome, setNome] = useState('')
-  const [cpfCnpj, setCpfCnpj] = useState('')
+  const [documento, setDocumento] = useState('')
   const [telefone, setTelefone] = useState('')
   const [email, setEmail] = useState('')
   const [endereco, setEndereco] = useState('')
-  const [tipo, setTipo] = useState<'NORMAL' | 'BALCAO'>('NORMAL')
 
   const [editandoId, setEditandoId] = useState<string | null>(null)
 
-  const carregarClientes = useCallback(async () => {
+  const carregarFornecedores = useCallback(async () => {
     try {
       setErro('')
       setCarregando(true)
 
-      const dados = await listarClientes()
-      setClientes(dados)
+      const dados = await listarFornecedores()
+      setFornecedores(dados)
     } catch (error) {
       setErro(
         error instanceof Error
           ? error.message
-          : 'Não foi possível carregar os clientes.',
+          : 'Não foi possível carregar os fornecedores.',
       )
     } finally {
       setCarregando(false)
@@ -46,20 +45,21 @@ function Clientes() {
   }, [])
 
   useEffect(() => {
-    carregarClientes()
-  }, [carregarClientes])
+    carregarFornecedores()
+  }, [carregarFornecedores])
 
   function limparFormulario() {
     setNome('')
-    setCpfCnpj('')
+    setDocumento('')
     setTelefone('')
     setEmail('')
     setEndereco('')
-    setTipo('NORMAL')
     setEditandoId(null)
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault()
 
     if (!usuario?.tenant_id) {
@@ -71,52 +71,49 @@ function Clientes() {
       setErro('')
 
       if (editandoId) {
-        await atualizarCliente(editandoId, {
+        await atualizarFornecedor(editandoId, {
           nome,
-          cpf_cnpj: cpfCnpj || undefined,
+          documento: documento || undefined,
           telefone: telefone || undefined,
           email: email || undefined,
           endereco: endereco || undefined,
-          tipo,
         })
       } else {
-        const novoCliente: CriarCliente = {
+        const novoFornecedor: CriarFornecedor = {
           tenant_id: usuario.tenant_id,
           nome,
-          cpf_cnpj: cpfCnpj || undefined,
+          documento: documento || undefined,
           telefone: telefone || undefined,
           email: email || undefined,
           endereco: endereco || undefined,
-          tipo,
         }
 
-        await criarCliente(novoCliente)
+        await criarFornecedor(novoFornecedor)
       }
 
       limparFormulario()
-      await carregarClientes()
+      await carregarFornecedores()
     } catch (error) {
       setErro(
         error instanceof Error
           ? error.message
-          : 'Não foi possível salvar o cliente.',
+          : 'Não foi possível salvar o fornecedor.',
       )
     }
   }
 
-  function iniciarEdicao(cliente: Cliente) {
-    setEditandoId(cliente.id)
-    setNome(cliente.nome)
-    setCpfCnpj(cliente.cpf_cnpj ?? '')
-    setTelefone(cliente.telefone ?? '')
-    setEmail(cliente.email ?? '')
-    setEndereco(cliente.endereco ?? '')
-    setTipo(cliente.tipo)
+  function iniciarEdicao(fornecedor: Fornecedor) {
+    setEditandoId(fornecedor.id)
+    setNome(fornecedor.nome)
+    setDocumento(fornecedor.documento ?? '')
+    setTelefone(fornecedor.telefone ?? '')
+    setEmail(fornecedor.email ?? '')
+    setEndereco(fornecedor.endereco ?? '')
   }
 
   async function handleExcluir(id: string) {
     const confirmar = window.confirm(
-      'Deseja realmente excluir este cliente?',
+      'Deseja realmente excluir este fornecedor?',
     )
 
     if (!confirmar) {
@@ -125,25 +122,25 @@ function Clientes() {
 
     try {
       setErro('')
-      await excluirCliente(id)
-      await carregarClientes()
+      await excluirFornecedor(id)
+      await carregarFornecedores()
     } catch (error) {
       setErro(
         error instanceof Error
           ? error.message
-          : 'Não foi possível excluir o cliente.',
+          : 'Não foi possível excluir o fornecedor.',
       )
     }
   }
 
   return (
     <main>
-      <h1>Clientes</h1>
+      <h1>Fornecedores</h1>
 
       {erro && <p>{erro}</p>}
 
       <section>
-        <h2>{editandoId ? 'Editar cliente' : 'Novo cliente'}</h2>
+        <h2>{editandoId ? 'Editar fornecedor' : 'Novo fornecedor'}</h2>
 
         <form onSubmit={handleSubmit}>
           <div>
@@ -158,13 +155,13 @@ function Clientes() {
           </div>
 
           <div>
-            <label htmlFor="cpfCnpj">CPF/CNPJ</label>
+            <label htmlFor="documento">Documento</label>
             <input
-              id="cpfCnpj"
+              id="documento"
               type="text"
-              value={cpfCnpj}
+              value={documento}
               onChange={(event) =>
-                setCpfCnpj(event.currentTarget.value)
+                setDocumento(event.currentTarget.value)
               }
             />
           </div>
@@ -205,24 +202,10 @@ function Clientes() {
             />
           </div>
 
-          <div>
-            <label htmlFor="tipo">Tipo</label>
-            <select
-              id="tipo"
-              value={tipo}
-              onChange={(event) =>
-                setTipo(
-                  event.currentTarget.value as 'NORMAL' | 'BALCAO',
-                )
-              }
-            >
-              <option value="NORMAL">Normal</option>
-              <option value="BALCAO">Balcão</option>
-            </select>
-          </div>
-
           <button type="submit">
-            {editandoId ? 'Salvar alterações' : 'Cadastrar cliente'}
+            {editandoId
+              ? 'Salvar alterações'
+              : 'Cadastrar fornecedor'}
           </button>
 
           {editandoId && (
@@ -234,44 +217,48 @@ function Clientes() {
       </section>
 
       <section>
-        <h2>Clientes cadastrados</h2>
+        <h2>Fornecedores cadastrados</h2>
 
         {carregando ? (
-          <p>Carregando clientes...</p>
-        ) : clientes.length === 0 ? (
-          <p>Nenhum cliente cadastrado.</p>
+          <p>Carregando fornecedores...</p>
+        ) : fornecedores.length === 0 ? (
+          <p>Nenhum fornecedor cadastrado.</p>
         ) : (
           <table>
             <thead>
               <tr>
                 <th>Nome</th>
-                <th>CPF/CNPJ</th>
+                <th>Documento</th>
                 <th>Telefone</th>
                 <th>E-mail</th>
-                <th>Tipo</th>
+                <th>Endereço</th>
+                <th>Status</th>
                 <th>Ações</th>
               </tr>
             </thead>
 
             <tbody>
-              {clientes.map((cliente) => (
-                <tr key={cliente.id}>
-                  <td>{cliente.nome}</td>
-                  <td>{cliente.cpf_cnpj ?? '-'}</td>
-                  <td>{cliente.telefone ?? '-'}</td>
-                  <td>{cliente.email ?? '-'}</td>
-                  <td>{cliente.tipo}</td>
+              {fornecedores.map((fornecedor) => (
+                <tr key={fornecedor.id}>
+                  <td>{fornecedor.nome}</td>
+                  <td>{fornecedor.documento ?? '-'}</td>
+                  <td>{fornecedor.telefone ?? '-'}</td>
+                  <td>{fornecedor.email ?? '-'}</td>
+                  <td>{fornecedor.endereco ?? '-'}</td>
+                  <td>
+                    {fornecedor.ativo ? 'Ativo' : 'Inativo'}
+                  </td>
                   <td>
                     <button
                       type="button"
-                      onClick={() => iniciarEdicao(cliente)}
+                      onClick={() => iniciarEdicao(fornecedor)}
                     >
                       Editar
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => handleExcluir(cliente.id)}
+                      onClick={() => handleExcluir(fornecedor.id)}
                     >
                       Excluir
                     </button>
@@ -286,4 +273,4 @@ function Clientes() {
   )
 }
 
-export default Clientes
+export default Fornecedores
