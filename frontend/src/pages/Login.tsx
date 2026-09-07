@@ -15,9 +15,9 @@ function LoginPage() {
     setCarregando(true)
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
-    })
+  email,
+  password: senha,
+})
 
     if (error) {
       setErro(error.message)
