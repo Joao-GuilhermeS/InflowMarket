@@ -5,6 +5,7 @@ import Clientes from './pages/Clientes'
 import Produtos from './pages/Produtos'
 import Fornecedores from './pages/Fornecedores'
 import Layout from './components/Layout'
+import Entradas from './pages/Entradas'
 
 function App() {
   const { user, carregando } = useAuth()
@@ -29,6 +30,10 @@ function App() {
           path="/clientes"
           element={<Clientes />}
         />
+        <Route
+         path="/entradas"
+         element={<Entradas />}
+/>
 
         <Route
           path="/produtos"
