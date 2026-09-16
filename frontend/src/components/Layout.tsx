@@ -14,6 +14,9 @@ function Layout() {
         </p>
 
         <nav>
+          <NavLink to="/">
+            Início
+          </NavLink>
           <NavLink to="/entradas">
            Entradas
           </NavLink>

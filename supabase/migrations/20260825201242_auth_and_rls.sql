@@ -48,7 +48,7 @@ CREATE OR REPLACE FUNCTION public.is_desenvolvedor()
 RETURNS boolean
 LANGUAGE sql
 STABLE
-SECURITY DEFINER
+SECURITY DEFINER''''''''''''''''''''''''    
 SET search_path = public
 AS $$
     SELECT EXISTS (

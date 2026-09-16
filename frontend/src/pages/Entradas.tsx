@@ -364,8 +364,7 @@ function Entradas() {
             onClick={handleAdicionarItem}
             disabled={salvando}
           >
-            Adicionar item
-          </button>
+            Adicionar item          </button>
 
           <h3>Itens da entrada</h3>
 

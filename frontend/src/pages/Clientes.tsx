@@ -44,7 +44,7 @@ function Clientes() {
       setCarregando(false)
     }
   }, [])
-
+ 
   useEffect(() => {
     carregarClientes()
   }, [carregarClientes])
@@ -135,7 +135,10 @@ function Clientes() {
       )
     }
   }
-
+//da mesma forma que ele fez isso assim, é foda.
+// function handleExcluir(id: string)
+// const confirmar = window.confirm()
+// DESEJAVÉL FAZER DA MESMA FORMA DA MESMA FORMA QUE ELE FEZ
   return (
     <main>
       <h1>Clientes</h1>
