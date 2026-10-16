@@ -20,7 +20,6 @@ import type { LucideIcon } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import '../App.css'
 
 interface NavigationItem {
   label: string

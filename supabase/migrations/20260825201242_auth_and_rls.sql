@@ -12,7 +12,7 @@ AS $$
     SELECT u
     FROM public.usuario u
     WHERE u.auth_user_id = auth.uid()
-    AND u.ativo = true
+      AND u.ativo = true
     LIMIT 1;
 $$;
 
@@ -26,7 +26,7 @@ AS $$
     SELECT u.tenant_id
     FROM public.usuario u
     WHERE u.auth_user_id = auth.uid()
-    AND u.ativo = true
+      AND u.ativo = true
     LIMIT 1;
 $$;
 
@@ -40,7 +40,7 @@ AS $$
     SELECT u.perfil
     FROM public.usuario u
     WHERE u.auth_user_id = auth.uid()
-    AND u.ativo = true
+      AND u.ativo = true
     LIMIT 1;
 $$;
 
@@ -48,15 +48,15 @@ CREATE OR REPLACE FUNCTION public.is_desenvolvedor()
 RETURNS boolean
 LANGUAGE sql
 STABLE
-SECURITY DEFINER''''''''''''''''''''''''    
+SECURITY DEFINER
 SET search_path = public
 AS $$
     SELECT EXISTS (
         SELECT 1
         FROM public.usuario u
         WHERE u.auth_user_id = auth.uid()
-        AND u.perfil = 'DESENVOLVEDOR'::public.perfil_usuario
-        AND u.ativo = true
+          AND u.perfil = 'DESENVOLVEDOR'::public.perfil_usuario
+          AND u.ativo = true
     );
 $$;
 
@@ -71,15 +71,17 @@ AS $$
         SELECT 1
         FROM public.usuario u
         WHERE u.auth_user_id = auth.uid()
-        AND u.ativo = true
-        AND u.perfil IN (
-            'GERENTE'::public.perfil_usuario,
-            'DESENVOLVEDOR'::public.perfil_usuario
-        )
+          AND u.ativo = true
+          AND u.perfil IN (
+              'GERENTE'::public.perfil_usuario,
+              'DESENVOLVEDOR'::public.perfil_usuario
+          )
     );
 $$;
 
-CREATE OR REPLACE FUNCTION public.tem_acesso_tenant(p_tenant_id uuid)
+CREATE OR REPLACE FUNCTION public.tem_acesso_tenant(
+    p_tenant_id uuid
+)
 RETURNS boolean
 LANGUAGE sql
 STABLE
@@ -92,8 +94,8 @@ AS $$
             SELECT 1
             FROM public.usuario u
             WHERE u.auth_user_id = auth.uid()
-            AND u.ativo = true
-            AND u.tenant_id = p_tenant_id
+              AND u.ativo = true
+              AND u.tenant_id = p_tenant_id
         );
 $$;
 

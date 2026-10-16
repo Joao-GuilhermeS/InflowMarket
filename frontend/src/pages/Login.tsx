@@ -35,40 +35,56 @@ function LoginPage() {
   }
 
   return (
-    <main>
-      <h1>InflowMarket</h1>
+    <main className="login-page">
+      <section aria-labelledby="login-title" className="login-card">
+        <header className="login-header">
+          <span aria-hidden="true" className="login-brand-mark">
+            IM
+          </span>
+          <div>
+            <h1 id="login-title">InflowMarket</h1>
+            <p>Gestão simples para o seu negócio.</p>
+          </div>
+        </header>
 
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="email">E-mail</label>
+        <form className="login-form" onSubmit={handleLogin}>
+          <div className="login-field">
+            <label htmlFor="email">E-mail</label>
 
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={handleEmailChange}
-            required
-          />
-        </div>
+            <input
+              autoComplete="username"
+              id="email"
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              required
+            />
+          </div>
 
-        <div>
-          <label htmlFor="senha">Senha</label>
+          <div className="login-field">
+            <label htmlFor="senha">Senha</label>
 
-          <input
-            id="senha"
-            type="password"
-            value={senha}
-            onChange={handleSenhaChange}
-            required
-          />
-        </div>
+            <input
+              autoComplete="current-password"
+              id="senha"
+              type="password"
+              value={senha}
+              onChange={handleSenhaChange}
+              required
+            />
+          </div>
 
-        <button type="submit" disabled={carregando}>
-          {carregando ? 'Entrando...' : 'Entrar'}
-        </button>
+          <button className="login-submit" type="submit" disabled={carregando}>
+            {carregando ? 'Entrando...' : 'Entrar'}
+          </button>
 
-        {erro && <p>{erro}</p>}
-      </form>
+          {erro && (
+            <p className="login-error" role="alert">
+              {erro}
+            </p>
+          )}
+        </form>
+      </section>
     </main>
   )
 }
