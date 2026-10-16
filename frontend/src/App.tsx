@@ -1,54 +1,54 @@
-import { Route, Routes } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
-import LoginPage from './pages/Login'
-import Clientes from './pages/Clientes'
-import Produtos from './pages/Produtos'
-import Fornecedores from './pages/Fornecedores'
 import Layout from './components/Layout'
-import Entradas from './pages/Entradas'
-import Dashboard from './pages/Dashboard'
+
+const LoginPage = lazy(() => import('./pages/Login'))
+const Clientes = lazy(() => import('./pages/Clientes'))
+const Produtos = lazy(() => import('./pages/Produtos'))
+const Fornecedores = lazy(() => import('./pages/Fornecedores'))
+const Entradas = lazy(() => import('./pages/Entradas'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
 
 function App() {
   const { user, carregando } = useAuth()
 
   if (carregando) {
-    return <p>Carregando...</p>
-  }
-
-  if (!user) {
-    return <LoginPage />
+    return (
+      <div className="loading-screen">
+        <span className="loading-spinner" aria-hidden="true" />
+        <span>Carregando sua sessão...</span>
+      </div>
+    )
   }
 
   return (
-    <Routes>
-      <Route
-          path="/"
-          element={<Dashboard />}
-        />
-      <Route element={<Layout />}>
-        
-
+    <Suspense
+      fallback={
+        <div className="loading-screen">
+          <span className="loading-spinner" aria-hidden="true" />
+          <span>Carregando tela...</span>
+        </div>
+      }
+    >
+      <Routes>
         <Route
-          path="/clientes"
-          element={<Clientes />}
+          path="/login"
+          element={user ? <Navigate to="/" replace /> : <LoginPage />}
         />
-        
+        <Route element={user ? <Layout /> : <Navigate to="/login" replace />}>
+          <Route index element={<Dashboard />} />
+          <Route path="clientes" element={<Clientes />} />
+          <Route path="entradas" element={<Entradas />} />
+          <Route path="produtos" element={<Produtos />} />
+          <Route path="fornecedores" element={<Fornecedores />} />
+        </Route>
         <Route
-         path="/entradas"
-         element={<Entradas />}
-/>
-
-        <Route
-          path="/produtos"
-          element={<Produtos />}
+          path="*"
+          element={<Navigate to={user ? '/' : '/login'} replace />}
         />
-
-        <Route
-          path="/fornecedores"
-          element={<Fornecedores />}
-        />
-      </Route>
-    </Routes>
+      </Routes>
+    </Suspense>
   )
 }
 
