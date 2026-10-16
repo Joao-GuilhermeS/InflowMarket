@@ -9,6 +9,9 @@ const Produtos = lazy(() => import('./pages/Produtos'))
 const Fornecedores = lazy(() => import('./pages/Fornecedores'))
 const Entradas = lazy(() => import('./pages/Entradas'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
+const PDV = lazy(() => import('./pages/PDV'))
+const Vendas = lazy(() => import('./pages/Vendas'))
+const RomaneioView = lazy(() => import('./pages/RomaneioView'))
 
 function App() {
   const { user, carregando } = useAuth()
@@ -38,6 +41,9 @@ function App() {
         />
         <Route element={user ? <Layout /> : <Navigate to="/login" replace />}>
           <Route index element={<Dashboard />} />
+          <Route path="pdv" element={<PDV />} />
+          <Route path="vendas" element={<Vendas />} />
+          <Route path="vendas/:id/romaneio" element={<RomaneioView />} />
           <Route path="clientes" element={<Clientes />} />
           <Route path="entradas" element={<Entradas />} />
           <Route path="produtos" element={<Produtos />} />

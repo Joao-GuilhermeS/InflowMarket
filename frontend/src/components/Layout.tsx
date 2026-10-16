@@ -10,6 +10,8 @@ import {
   Menu,
   MoreHorizontal,
   PackagePlus,
+  ShoppingBag,
+  ShoppingCart,
   Truck,
   Users,
   X,
@@ -29,6 +31,8 @@ interface NavigationItem {
 
 const primaryNavigation: NavigationItem[] = [
   { label: 'Visão geral', to: '/', icon: Home, end: true },
+  { label: 'Nova venda', to: '/pdv', icon: ShoppingCart },
+  { label: 'Vendas', to: '/vendas', icon: ShoppingBag },
   { label: 'Clientes', to: '/clientes', icon: Users },
   { label: 'Produtos', to: '/produtos', icon: Boxes },
 ]
@@ -266,7 +270,8 @@ function Layout() {
           }
         }}
       >
-        <BottomNavigationLink icon={Home} label="Início" to="/" />
+        <BottomNavigationLink icon={ShoppingCart} label="PDV" to="/pdv" />
+        <BottomNavigationLink icon={ShoppingBag} label="Vendas" to="/vendas" />
         <BottomNavigationLink
           icon={Users}
           label="Clientes"
@@ -276,11 +281,6 @@ function Layout() {
           icon={Boxes}
           label="Produtos"
           to="/produtos"
-        />
-        <BottomNavigationLink
-          icon={PackagePlus}
-          label="Entradas"
-          to="/entradas"
         />
         <button
           aria-expanded={moreOpen}
@@ -292,6 +292,22 @@ function Layout() {
         </button>
         {moreOpen && (
           <div className="bottom-nav-more">
+            <NavLink
+              className="bottom-nav-more-link"
+              onClick={() => setMoreOpen(false)}
+              to="/"
+            >
+              <Home size={17} />
+              Visão geral
+            </NavLink>
+            <NavLink
+              className="bottom-nav-more-link"
+              onClick={() => setMoreOpen(false)}
+              to="/entradas"
+            >
+              <PackagePlus size={17} />
+              Entradas
+            </NavLink>
             <NavLink
               className="bottom-nav-more-link"
               onClick={() => setMoreOpen(false)}
