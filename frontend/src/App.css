@@ -1,7 +1,7 @@
 .app-shell {
   display: flex;
   min-height: 100vh;
-  background: var(--canvas);
+  background: var(--background);
 }
 
 .sidebar {
@@ -201,11 +201,11 @@
   z-index: 20;
   top: 0;
   display: flex;
-  height: 72px;
+  height: 64px;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 30px;
+  padding: 0 24px;
   border-bottom: 1px solid var(--line);
   background: rgb(255 255 255 / 94%);
   backdrop-filter: blur(12px);
@@ -222,6 +222,17 @@
 .topbar-leading {
   min-width: 0;
   gap: 14px;
+}
+
+.tenant-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .tenant-heading {
@@ -313,10 +324,13 @@
 
 .page-content {
   width: 100%;
-  max-width: 1600px;
-  min-height: calc(100vh - 72px);
+  max-width: 1280px;
+  min-height: calc(100vh - 64px);
   margin: 0 auto;
-  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
 }
 
 .mobile-overlay,
@@ -479,6 +493,10 @@
 
   .tenant-heading > span {
     font-size: 9px;
+  }
+
+  .tenant-icon {
+    display: none;
   }
 
   .topbar-user-copy,
