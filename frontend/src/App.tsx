@@ -4,6 +4,7 @@ import { useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
 
 const LoginPage = lazy(() => import('./pages/Login'))
+const RedefinirSenha = lazy(() => import('./pages/RedefinirSenha'))
 const Clientes = lazy(() => import('./pages/Clientes'))
 const Produtos = lazy(() => import('./pages/Produtos'))
 const Fornecedores = lazy(() => import('./pages/Fornecedores'))
@@ -35,6 +36,7 @@ function App() {
       }
     >
       <Routes>
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
         <Route
           path="/login"
           element={user ? <Navigate to="/" replace /> : <LoginPage />}

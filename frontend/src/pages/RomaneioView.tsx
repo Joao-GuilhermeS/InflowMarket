@@ -84,20 +84,26 @@ function RomaneioView() {
       {romaneio && (
         <article className="receipt-paper">
           <header className="receipt-brand">
-            {romaneio.tenantLogo ? (
-              <img
-                alt=""
-                className="receipt-tenant-logo"
-                src={romaneio.tenantLogo}
-              />
-            ) : (
-              <span className="receipt-brand-mark">
-                <Leaf size={22} />
-              </span>
-            )}
-            <div>
-              <strong>{romaneio.tenantNome}</strong>
-              <span>Romaneio de venda</span>
+            <div className="receipt-brand-identity">
+              {romaneio.tenantLogo ? (
+                <img
+                  alt=""
+                  className="receipt-tenant-logo"
+                  src={romaneio.tenantLogo}
+                />
+              ) : (
+                <span className="receipt-brand-mark">
+                  <Leaf size={22} />
+                </span>
+              )}
+              <div>
+                <strong>{romaneio.tenantNome}</strong>
+                <span>Romaneio de venda</span>
+              </div>
+            </div>
+            <div className="receipt-brand-datetime">
+              <span>Data e hora</span>
+              <strong>{dataHora(romaneio.dataVenda)}</strong>
             </div>
           </header>
 
@@ -109,10 +115,6 @@ function RomaneioView() {
             <div>
               <span>Venda</span>
               <strong>#{romaneio.numeroVenda}</strong>
-            </div>
-            <div>
-              <span>Data</span>
-              <strong>{dataHora(romaneio.dataVenda)}</strong>
             </div>
             <div>
               <span>Cliente</span>
@@ -173,6 +175,9 @@ function RomaneioView() {
 
           <div className="receipt-total">
             <span>Total</span>
+            <span aria-hidden="true" className="receipt-total-equals">
+              =
+            </span>
             <strong>{moeda.format(romaneio.valorTotal)}</strong>
           </div>
           <footer className="receipt-footer">
